@@ -25,6 +25,7 @@ public class DemoApplication {
 	
 //	@GetMapping("/hello")
 	public String hello() {
+		System.out.println("test pull");
 		return "hello spring security";
 	}
 
