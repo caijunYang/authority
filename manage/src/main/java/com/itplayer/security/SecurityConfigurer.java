@@ -1,6 +1,8 @@
 package com.itplayer.security;
 
 import com.itplayer.core.propertis.SecurityProperties;
+import com.itplayer.security.authentication.CustomAuthenticationFaildHandler;
+import com.itplayer.security.authentication.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +16,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private SecurityProperties securityProperties;
 
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    @Autowired
+    private CustomAuthenticationFaildHandler customAuthenticationFaildHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin().loginPage("/authentication/require")//用表单登录进行身份认证
+        http.formLogin().loginPage("/resources/itplayer_login.html")//用表单登录进行身份认证
                 .loginProcessingUrl("/itplayer_login")//登录地址
+                .successHandler(customAuthenticationSuccessHandler).failureHandler(customAuthenticationFaildHandler)
                 .and()
                 .authorizeRequests().antMatchers("/authentication/require", securityProperties.getAuthority().getLoginPage()).permitAll()//搜全配置，所有请求都需要进行份验证排除部分
                 .anyRequest()
