@@ -1,6 +1,7 @@
 package com.itplayer.security;
 
 import com.itplayer.core.propertis.SecurityProperties;
+import com.itplayer.core.validate.ValidateCodeFilter;
 import com.itplayer.security.authentication.CustomAuthenticationFaildHandler;
 import com.itplayer.security.authentication.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
@@ -23,11 +25,13 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin().loginPage("/resources/itplayer_login.html")//用表单登录进行身份认证
+        ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class).
+                formLogin().loginPage("/resources/itplayer_login.html")//用表单登录进行身份认证
                 .loginProcessingUrl("/itplayer_login")//登录地址
                 .successHandler(customAuthenticationSuccessHandler).failureHandler(customAuthenticationFaildHandler)
                 .and()
-                .authorizeRequests().antMatchers("/authentication/require", securityProperties.getAuthority().getLoginPage()).permitAll()//搜全配置，所有请求都需要进行份验证排除部分
+                .authorizeRequests().antMatchers("/authentication/require", securityProperties.getAuthority().getLoginPage(), "/code/image").permitAll()//搜全配置，所有请求都需要进行份验证排除部分
                 .anyRequest()
                 .authenticated()
                 .and().csrf().disable();//暂时关闭跨站伪造防护功能

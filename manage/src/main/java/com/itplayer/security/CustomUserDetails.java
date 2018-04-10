@@ -21,7 +21,6 @@ public class CustomUserDetails implements UserDetailsService {
         System.out.println("dbpasswor======" + encode);
 
         return new LoginManager(username, encode, AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
-
 //        return new User(username,"123456",AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
     }
 
