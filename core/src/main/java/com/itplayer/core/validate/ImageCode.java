@@ -1,5 +1,7 @@
 package com.itplayer.core.validate;
 
+import sun.rmi.runtime.Log;
+
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 
@@ -50,7 +52,6 @@ public class ImageCode {
     }
 
     public boolean isExpried() {
-
         return LocalDateTime.now().isAfter(localDateTime);
     }
 }
