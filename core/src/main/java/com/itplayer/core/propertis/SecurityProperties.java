@@ -10,11 +10,21 @@ public class SecurityProperties {
 
     private AuthorityProperties authority = new AuthorityProperties();
 
+    private ValidateCodeProperties code = new ValidateCodeProperties();
+
     public AuthorityProperties getAuthority() {
         return authority;
     }
 
     public void setAuthority(AuthorityProperties authority) {
         this.authority = authority;
+    }
+
+    public ValidateCodeProperties getCode() {
+        return code;
+    }
+
+    public void setCode(ValidateCodeProperties code) {
+        this.code = code;
     }
 }

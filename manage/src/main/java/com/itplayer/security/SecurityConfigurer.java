@@ -26,6 +26,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
+        validateCodeFilter.setAuthenticationFailureHandler(customAuthenticationFaildHandler);
+        validateCodeFilter.setSecurityProperties(securityProperties);
+        validateCodeFilter.afterPropertiesSet();
+
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class).
                 formLogin().loginPage("/resources/itplayer_login.html")//用表单登录进行身份认证
                 .loginProcessingUrl("/itplayer_login")//登录地址
