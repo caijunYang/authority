@@ -9,9 +9,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
@@ -23,6 +29,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomAuthenticationFaildHandler customAuthenticationFaildHandler;
 
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
@@ -33,7 +45,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class).
                 formLogin().loginPage("/resources/itplayer_login.html")//用表单登录进行身份认证
                 .loginProcessingUrl("/itplayer_login")//登录地址
-                .successHandler(customAuthenticationSuccessHandler).failureHandler(customAuthenticationFaildHandler)
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFaildHandler)
+                .and().rememberMe().tokenRepository(persistentTokenRepository()).tokenValiditySeconds(securityProperties.getAuthority().getRememberMeSeconds()).userDetailsService(userDetailsService)
                 .and()
                 .authorizeRequests().antMatchers("/authentication/require", securityProperties.getAuthority().getLoginPage(), "/code/image").permitAll()//搜全配置，所有请求都需要进行份验证排除部分
                 .anyRequest()
@@ -44,5 +58,13 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        tokenRepository.setCreateTableOnStartup(true);
+        return tokenRepository;
     }
 }

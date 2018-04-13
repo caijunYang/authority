@@ -21,6 +21,28 @@
             <td><input name="imageCode" type="text"> <img src="/code/image"></td>
         </tr>
         <tr>
+            <td colspan="2"><input type="checkbox"  name ="remember-me" value="记住我"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="登录"></td>
+        </tr>
+    </table>
+
+</form>
+<h2>===============================================================================</h2>
+
+<form action="/itplayer_login" method="post">
+    <table>
+        <tr>
+            <td>手机号：</td>
+            <td><input name="mobile" type="text"></td>
+        </tr>
+
+        <tr>
+            <td>短信验证码：</td>
+            <td><input name="smsCode" type="text"> <a href="/code/sms?mobile=123455656">发送短信验证码</a></td>
+        </tr>
+        <tr>
             <td colspan="2"><input type="submit" value="登录"></td>
         </tr>
     </table>
